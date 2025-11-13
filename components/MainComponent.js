@@ -12,7 +12,43 @@ import { Icon, Image } from "react-native-elements";
 
 import Home from "./HomeComponent";
 import { connect } from "react-redux";
-import { fetchLeaders } from "../redux/ActionCreators";
+import {
+  fetchLeaders,
+  fetchDishes,
+  fetchComments,
+  fetchPromos,
+} from "../redux/ActionCreators";
+import { baseUrl } from "../shared/baseUrl";
+import Reservation from "./ReservationComponent";
+function ReservationNavigatorScreen() {
+  const ReservationNavigator = createStackNavigator();
+  return (
+    <ReservationNavigator.Navigator
+      initialRouteName="Reservation"
+      screenOptions={{
+        headerStyle: { backgroundColor: "#7cc" },
+        headerTintColor: "#fff",
+        headerTitleStyle: { color: "#fff" },
+      }}
+    >
+      <ReservationNavigator.Screen
+        name="Reservation"
+        component={Reservation}
+        options={({ navigation }) => ({
+          headerTitle: "Reserve Table",
+          headerLeft: () => (
+            <Icon
+              name="menu"
+              size={36}
+              color="#fff"
+              onPress={() => navigation.toggleDrawer()}
+            />
+          ),
+        })}
+      />
+    </ReservationNavigator.Navigator>
+  );
+}
 function HomeNavigatorScreen() {
   const HomeNavigator = createStackNavigator();
   return (
@@ -161,7 +197,7 @@ function CustomDrawerContent(props) {
       >
         <View style={{ flex: 1 }}>
           <Image
-            source={require("./images/logo.png")}
+            source={{ uri: baseUrl + "images/logo.png" }}
             style={{ margin: 10, width: 80, height: 60 }}
           />
         </View>
@@ -239,12 +275,33 @@ function MainNavigatorScreen() {
           ),
         }}
       />
+      <MainNavigator.Screen
+        name="ReservationScreen"
+        component={ReservationNavigatorScreen}
+        options={{
+          title: "Reserve Table",
+          headerShown: false,
+          drawerIcon: ({ focused, size }) => (
+            <Icon
+              name="cutlery"
+              type="font-awesome"
+              size={size}
+              color={focused ? "#7cc" : "#ccc"}
+            />
+          ),
+        }}
+      />
     </MainNavigator.Navigator>
   );
 }
 
+// redux
+
 const mapDispatchToProps = (dispatch) => ({
   fetchLeaders: () => dispatch(fetchLeaders()),
+  fetchDishes: () => dispatch(fetchDishes()),
+  fetchComments: () => dispatch(fetchComments()),
+  fetchPromos: () => dispatch(fetchPromos()),
 });
 
 class Main extends Component {
@@ -258,6 +315,9 @@ class Main extends Component {
   componentDidMount() {
     // redux
     this.props.fetchLeaders();
+    this.props.fetchDishes();
+    this.props.fetchComments();
+    this.props.fetchPromos();
   }
 }
 export default connect(null, mapDispatchToProps)(Main);
